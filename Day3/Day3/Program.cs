@@ -1,17 +1,23 @@
 ﻿string pointsIndex = " abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
 int totalPriority = 0;
 
+List<string> elfGroup = new();
+
 foreach (string line in File.ReadLines(@"C:\Users\WebberS\source\repos\AdventOfCode2022\Day3\Day3\data.txt"))
 {
-    int lineLength = line.Length;
-    string compartment1 = line.Substring(0, lineLength / 2);
-    string compartment2 = line.Substring(lineLength / 2);
+    elfGroup.Add(line);
+    if (elfGroup.Count < 3) continue;
 
-    var sharedType = compartment1.Intersect(compartment2).First();
+    var foo = elfGroup[0].Intersect(elfGroup[1]);
+    var bar = elfGroup[1].Intersect(elfGroup[2]);
+    var sharedType = foo.Intersect(bar).First();
+    
     int priority = pointsIndex.IndexOf(sharedType);
     totalPriority += priority;
 
-    Console.WriteLine($"{compartment1} - {compartment2} == {sharedType} / {priority}");
+    Console.WriteLine($"{elfGroup[0]}\n{elfGroup[1]}\n{elfGroup[2]}\nShared item: {sharedType}, Priority: {priority}\n");
+
+    elfGroup = new List<string>();
 }
 
 Console.WriteLine($"Total priority: {totalPriority}");
