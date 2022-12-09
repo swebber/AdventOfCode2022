@@ -1,15 +1,14 @@
 ﻿var line = File.ReadLines(@"C:\Users\WebberS\source\repos\AdventOfCode2022\Day6\Day6\data.txt").First();
 
-const int packetLength = 4;
-const int packetOffset = 3;
-int packetCount = line.Length - packetOffset;
+const int messageMarkerLength = 14;
+int messageMarkerCount = line.Length - (messageMarkerLength - 1);
 
-for (int i = 0; i < packetCount; i++)
+for (int i = 0; i < messageMarkerCount; i++)
 {
-    string packet = line.Substring(i, packetLength);
-    if (packet.Distinct().Count() == packetLength)
+    string packet = line.Substring(i, messageMarkerLength);
+    if (packet.Distinct().Count() == messageMarkerLength)
     {
-        Console.WriteLine($"First market after character: {i + packetLength}");
+        Console.WriteLine($"First marker after character: {i + messageMarkerLength}");
         return;
     }
 }
