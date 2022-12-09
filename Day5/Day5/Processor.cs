@@ -75,9 +75,17 @@
             int fromStack = int.Parse(commands[3]);
             int toStack = int.Parse(commands[5]);
 
+            Stack<char> crane = new();
+
             for (int i = 0; i < itemsToMove; i++)
             {
-                var item = _stacks[fromStack - 1].Pop();
+                char item = _stacks[fromStack - 1].Pop();
+                crane.Push(item);
+            }
+
+            while (crane.Count > 0)
+            {
+                char item = crane.Pop();
                 _stacks[toStack - 1].Push(item);
             }
         }
