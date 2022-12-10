@@ -7,14 +7,134 @@
         private int _maxRows;
         private int _maxCols;
         private int[,] _treeGrid;
-        private int _numberOfTreesOnOuterEdge;
 
         public void Run()
         {
             LoadTreeGrid();
-            NumberOfTreesOnOuterEdge();
+
             //DumpTree();
 
+            //int outerEdgeCount = OuterEdgeCount();
+            //int visibleTreeCount = VisibleTreeCount();
+            //Console.WriteLine($"Number of trees visible from outside the grid: {outerEdgeCount + visibleTreeCount}");
+
+            int maxScenicScore = 0;
+            int scenicRow = 0;
+            int scenicCol = 0;
+
+            for (int row = 0; row < _maxRows; row++)
+            {
+                for (int col = 0; col < _maxCols; col++)
+                {
+                    int scenicScore = ScenicScore(row, col);
+                    if (scenicScore > maxScenicScore)
+                    {
+                        maxScenicScore = scenicScore;
+                        scenicRow = row;
+                        scenicCol = col;
+                    }
+                }
+            }
+
+            Console.WriteLine($"Row: {scenicRow}, Col: {scenicCol}, Score: {maxScenicScore}");
+        }
+
+        private int ScenicScore(int row, int col)
+        {
+            int top = ScenicScoreFromTop(row, col);
+            int right = ScenicScoreFromRight(row, col);
+            int bottom = ScenicScoreFromBottom(row, col);
+            int left = ScenicScoreFromLeft(row, col);
+
+            return top * right * bottom * left;
+        }
+
+        private int ScenicScoreFromLeft(int row, int col)
+        {
+            if (col == 0) return 0;
+
+            int score = 0;
+            int maxHeight = _treeGrid[row, col] + 1;
+            int height = int.MinValue;
+            while (--col >= 0)
+            {
+                int nextHeight = _treeGrid[row, col];
+                if (nextHeight >= height)
+                {
+                    height = nextHeight;
+                    ++score;
+                    if (nextHeight >= maxHeight) break;
+                }
+            }
+
+            return score;
+        }
+
+        private int ScenicScoreFromBottom(int row, int col)
+        {
+            if (row == _maxRows - 1) return 0;
+
+            int score = 0;
+            int maxHeight = _treeGrid[row, col] + 1;
+            int height = int.MinValue;
+            while (++row < _maxRows)
+            {
+                int nextHeight = _treeGrid[row, col];
+                if (nextHeight >= height)
+                {
+                    height = nextHeight;
+                    ++score;
+                    if (nextHeight >= maxHeight) break;
+                }
+            }
+
+            return score;
+        }
+
+        private int ScenicScoreFromRight(int row, int col)
+        {
+            if (col == _maxCols - 1) return 0;
+
+            int score = 0;
+            int maxHeight = _treeGrid[row, col] + 1;
+            int height = int.MinValue;
+            while (++col < _maxCols)
+            {
+                int nextHeight = _treeGrid[row, col];
+                if (nextHeight >= height)
+                {
+                    height = nextHeight;
+                    ++score;
+                    if (nextHeight >= maxHeight) break;
+                }
+            }
+
+            return score;
+        }
+
+        private int ScenicScoreFromTop(int row, int col)
+        {
+            if (row == 0) return 0;
+
+            int score = 0;
+            int maxHeight = _treeGrid[row, col] + 1;
+            int height = int.MinValue;
+            while (--row >= 0)
+            {
+                int nextHeight = _treeGrid[row, col];
+                if (nextHeight >= height)
+                {
+                    height = nextHeight;
+                    ++score;
+                    if (nextHeight >= maxHeight) break;
+                }
+            }
+
+            return score;
+        }
+
+        private int VisibleTreeCount()
+        {
             int visibleTreeCount = 0;
             int rows = _maxRows - 1;
             int cols = _maxCols - 1;
@@ -26,7 +146,7 @@
                 }
             }
 
-            Console.WriteLine($"Number of trees visible from outside the grid: {_numberOfTreesOnOuterEdge + visibleTreeCount}");
+            return visibleTreeCount;
         }
 
         private bool TreeIsVisible(int row, int col)
@@ -85,9 +205,9 @@
             return true;
         }
 
-        private void NumberOfTreesOnOuterEdge()
+        private int OuterEdgeCount()
         {
-            _numberOfTreesOnOuterEdge = ((_maxRows - 1) * 2) + ((_maxCols - 1) * 2);
+            return ((_maxRows - 1) * 2) + ((_maxCols - 1) * 2);
         }
 
         private void DumpTree()
