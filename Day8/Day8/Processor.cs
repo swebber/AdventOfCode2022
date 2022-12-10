@@ -42,9 +42,9 @@
         private int ScenicScore(int row, int col)
         {
             int top = ScenicScoreFromTop(row, col);
+            int left = ScenicScoreFromLeft(row, col);
             int right = ScenicScoreFromRight(row, col);
             int bottom = ScenicScoreFromBottom(row, col);
-            int left = ScenicScoreFromLeft(row, col);
 
             return top * right * bottom * left;
         }
@@ -54,17 +54,12 @@
             if (col == 0) return 0;
 
             int score = 0;
-            int maxHeight = _treeGrid[row, col] + 1;
-            int height = int.MinValue;
+            int maxHeight = _treeGrid[row, col];
             while (--col >= 0)
             {
+                score++;
                 int nextHeight = _treeGrid[row, col];
-                if (nextHeight >= height)
-                {
-                    height = nextHeight;
-                    ++score;
-                    if (nextHeight >= maxHeight) break;
-                }
+                if (nextHeight >= maxHeight) break;
             }
 
             return score;
@@ -75,17 +70,12 @@
             if (row == _maxRows - 1) return 0;
 
             int score = 0;
-            int maxHeight = _treeGrid[row, col] + 1;
-            int height = int.MinValue;
+            int maxHeight = _treeGrid[row, col];
             while (++row < _maxRows)
             {
+                ++score;
                 int nextHeight = _treeGrid[row, col];
-                if (nextHeight >= height)
-                {
-                    height = nextHeight;
-                    ++score;
-                    if (nextHeight >= maxHeight) break;
-                }
+                if (nextHeight >= maxHeight) break;
             }
 
             return score;
@@ -96,17 +86,12 @@
             if (col == _maxCols - 1) return 0;
 
             int score = 0;
-            int maxHeight = _treeGrid[row, col] + 1;
-            int height = int.MinValue;
+            int maxHeight = _treeGrid[row, col];
             while (++col < _maxCols)
             {
+                ++score;
                 int nextHeight = _treeGrid[row, col];
-                if (nextHeight >= height)
-                {
-                    height = nextHeight;
-                    ++score;
-                    if (nextHeight >= maxHeight) break;
-                }
+                if (nextHeight >= maxHeight) break;
             }
 
             return score;
@@ -117,17 +102,12 @@
             if (row == 0) return 0;
 
             int score = 0;
-            int maxHeight = _treeGrid[row, col] + 1;
-            int height = int.MinValue;
+            int maxHeight = _treeGrid[row, col];
             while (--row >= 0)
             {
+                ++score;
                 int nextHeight = _treeGrid[row, col];
-                if (nextHeight >= height)
-                {
-                    height = nextHeight;
-                    ++score;
-                    if (nextHeight >= maxHeight) break;
-                }
+                if (nextHeight >= maxHeight) break;
             }
 
             return score;
