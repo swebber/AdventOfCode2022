@@ -16,6 +16,12 @@ internal class Processor
     private const ulong TotalBounds = 100000;
     private ulong _totalOfSize = 0;
 
+    private const ulong TotalDiskSpace = 70000000;
+    private const ulong RequiredSpace = 30000000;
+    private ulong _additionalSpaceRequired;
+
+    private Folder? _nextLargerFolder;
+
     public void Run()
     {
         _currentFolder = _rootFolder;
@@ -24,6 +30,32 @@ internal class Processor
         ReportFolderSizes(_rootFolder);
 
         Console.WriteLine($"\nTotal under {TotalBounds}: {_totalOfSize}");
+
+        ulong totalAvailableSpace = TotalDiskSpace - _rootFolder.TotalSize;
+        _additionalSpaceRequired = RequiredSpace - totalAvailableSpace;
+
+        Console.WriteLine($"\nRequired space: {_additionalSpaceRequired}");
+
+        _nextLargerFolder = _rootFolder;
+        NextLargerFolder(_rootFolder);
+
+        Console.WriteLine($"\nSize of next larger folder: {_nextLargerFolder.Name} - {_nextLargerFolder.TotalSize}");
+    }
+
+    private void NextLargerFolder(Folder folder)
+    {
+        if (folder.TotalSize > _additionalSpaceRequired)
+        {
+            if (folder.TotalSize < _nextLargerFolder.TotalSize)
+                _nextLargerFolder = folder;
+        }
+
+        if (!folder.Children.Any()) return;
+
+        foreach (var child in folder.Children)
+        {
+            NextLargerFolder(child);
+        }
     }
 
     private void ReportFolderSizes(Folder folder)
@@ -62,7 +94,7 @@ internal class Processor
 
     private void BuildTree()
     {
-        foreach (string line in File.ReadLines(@"C:\Users\WebberS\source\repos\AdventOfCode2022\Day7\Day7\test-data.txt"))
+        foreach (string line in File.ReadLines(@"C:\Users\WebberS\source\repos\AdventOfCode2022\Day7\Day7\data.txt"))
         {
             if (line.StartsWith('$'))
             {
