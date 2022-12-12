@@ -12,18 +12,22 @@ public class Processor
     public void Run()
     {
         LoadMonkeys();
+        CommonMultiple();
 
-        for (int round = 0; round < 20; round++)
+        for (int round = 0; round < 10000; round++)
         {
             foreach (var monkey in _monkeys)
             {
                 monkey.Round();
             }
 
-            Console.WriteLine($"\nAfter round {round + 1}, the monkeys are holding items with these worry levels:");
-            foreach (var monkey in _monkeys)
+            if ((round + 1) % 1000 == 0)
             {
-                monkey.DumpItems();
+                Console.WriteLine($"\nAfter round {round + 1}, the monkeys are holding items with these worry levels:");
+                foreach (var monkey in _monkeys)
+                {
+                    monkey.DumpItems();
+                }
             }
         }
 
@@ -33,14 +37,28 @@ public class Processor
             Console.WriteLine($"Monkey {monkey.Id} inspected {monkey.NumberOfInspections} items");
         }
 
-        int monkeyBusinessLevel = MonkeyBusiness();
+        long monkeyBusinessLevel = MonkeyBusiness();
         Console.WriteLine($"\nLevel of monkey business: {monkeyBusinessLevel}");
     }
 
-    private int MonkeyBusiness()
+    private void CommonMultiple()
     {
-        int max1 = int.MinValue;
-        int max2 = int.MaxValue;
+        int cm = 1;
+        foreach (var monkey in _monkeys)
+        {
+            cm *= monkey.Divisor ?? 1;
+        }
+
+        foreach (var monkey in _monkeys)
+        {
+            monkey.CommonMultiple = cm;
+        }
+    }
+
+    private long MonkeyBusiness()
+    {
+        long max1 = long.MinValue;
+        long max2 = long.MaxValue;
         foreach (var monkey in _monkeys)
         {
             if (monkey.NumberOfInspections > max1)

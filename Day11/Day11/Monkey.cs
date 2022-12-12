@@ -6,11 +6,14 @@ public class Monkey
 {
     List<Monkey>? _monkeys;
 
+    private readonly long _worryValue = 1;
+    
     private int _numberOfInspections = 0;
     public int NumberOfInspections => _numberOfInspections;
 
+    public long CommonMultiple { get; set; } = 0;
     public int Id { get; set; } = -1;
-    public Queue<int> Items { get; set; } = new();
+    public Queue<long> Items { get; set; } = new();
     public string Value1 { get; set; } = "";
     public string Value2 { get; set; } = "";
     public string Operator { get; set; } = "";
@@ -80,41 +83,41 @@ public class Monkey
         while (Items.Any())
         {
             _numberOfInspections++;
-            int item = Items.Dequeue();
-            int worryLevel = GetWorryLevel(item);
+            long item = Items.Dequeue();
+            long worryLevel = GetWorryLevel(item);
 
             int? monkeyId = worryLevel % Divisor == 0 ? TrueMonkey : FalseMonkey;
-            ThrowItemToMonkey(worryLevel, monkeyId);
+            ThrowItemToMonkey(worryLevel % CommonMultiple, monkeyId);
         }
     }
 
-    private void ThrowItemToMonkey(int worryLevel, int? monkeyId)
+    private void ThrowItemToMonkey(long worryLevel, int? monkeyId)
     {
         if (_monkeys == null) throw new ArgumentNullException(nameof(_monkeys));
         var monkey = _monkeys.First(m => m.Id == monkeyId);
         monkey.Items.Enqueue(worryLevel);
     }
 
-    private int GetWorryLevel(int oldValue)
+    private long GetWorryLevel(long oldValue)
     {
-        int value1 = GetValue(Value1, oldValue);
-        int value2 = GetValue(Value2, oldValue);
+        long value1 = GetValue(Value1, oldValue);
+        long value2 = GetValue(Value2, oldValue);
 
         switch (Operator)
         {
             case "+":
-                return (value1 + value2) / 3;
+                return checked (value1 + value2) / _worryValue;
             case "*":
-                return (value1 * value2) / 3;
+                return checked (value1 * value2) / _worryValue;
             default:
                 throw new NotImplementedException();
         }
     }
 
-    private int GetValue(string value, int oldValue)
+    private long GetValue(string value, long oldValue)
     {
         if (value == "old") return oldValue;
-        if (int.TryParse(value, out int result)) return result;
+        if (long.TryParse(value, out long result)) return result;
         throw new ArgumentOutOfRangeException();
     }
 
