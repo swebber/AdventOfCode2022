@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Drawing;
 
 namespace Day12
 {
@@ -14,10 +10,10 @@ namespace Day12
         public int GridWidth = 0;
         public int GridHeight = 0;
 
-        public int StartX = 0;
-        public int StartY = 0;
         public int EndX = 0;
         public int EndY = 0;
+
+        public Queue<Point> StartingPoints = new();
 
         public bool PathUpdated = true;
 
@@ -25,15 +21,42 @@ namespace Day12
         {
             LoadGrid();
 
-            int iteration = 0;
-            while (PathUpdated)
+            int minSteps = int.MaxValue;
+            while (StartingPoints.Any())
             {
-                WalkGrid();
-                iteration++;
+                var start = StartingPoints.Dequeue();
+                ResetGrid(start);
+
+                int iteration = 0;
+                PathUpdated = true;
+                while (PathUpdated)
+                {
+                    WalkGrid();
+                    iteration++;
+                }
+
+                int stepsFromStart = Grid[EndX, EndY].StepsFromStart;
+                Console.WriteLine($"\nNumber of iterations: {iteration}");
+                Console.WriteLine($"Steps to end point: {stepsFromStart} from {start.X}, {start.Y}");
+
+                if (stepsFromStart < minSteps) 
+                    minSteps = stepsFromStart;
             }
 
-            Console.WriteLine($"Number of iterations: {iteration}");
-            Console.WriteLine($"Steps to end point: {Grid[EndX, EndY].StepsFromStart}");
+            Console.WriteLine($"\nMinimum path length: {minSteps}");
+        }
+
+        private void ResetGrid(Point start)
+        {
+            for (int y = 0; y < GridHeight; y++)
+            {
+                for (int x = 0; x < GridWidth; x++)
+                {
+                    Grid[x, y].StepsFromStart = int.MaxValue;
+                }
+            }
+
+            Grid[start.X, start.Y].StepsFromStart = 0;
         }
 
         private void WalkGrid()
@@ -123,8 +146,6 @@ namespace Day12
                     {
                         case 'S':
                             isStart = true;
-                            StartX = x;
-                            StartY = y;
                             break;
                         case 'E':
                             isEnd = true;
@@ -135,6 +156,11 @@ namespace Day12
                         default:
                             height = HeightIndex.IndexOf(ch) + 1;
                             break;
+                    }
+
+                    if (ch is 'S' or 'a')
+                    {
+                        StartingPoints.Enqueue(new Point(x, y));
                     }
 
                     Grid[x, y] = new Node(height, isStart, isEnd);
