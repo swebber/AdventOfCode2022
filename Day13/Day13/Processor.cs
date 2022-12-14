@@ -4,12 +4,22 @@ namespace Day13
 {
     public class Processor
     {
-        private readonly string FileName = @"C:\Users\WebberS\source\repos\AdventOfCode2022\Day13\Day13\unit-data.txt";
+        private readonly string FileName = @"C:\Users\WebberS\source\repos\AdventOfCode2022\Day13\Day13\data.txt";
+
+        private enum Status
+        {
+            Undefined,
+            InOrder,
+            OutOfOrder
+        }
 
         public void Run()
         {
             Queue<string>? packet1 = null;
             Queue<string>? packet2 = null;
+
+            int sum = 0;
+            int packetIndex = 0;
 
             foreach (var line in File.ReadLines(FileName))
             {
@@ -27,26 +37,33 @@ namespace Day13
                     packet2 = ParsePacket(packet);
                 };
 
-                var result = ComparePackets(packet1, packet2);
+                var status = ComparePackets(packet1, packet2);
+
+                packetIndex++;
+                if (status == Status.InOrder) sum += packetIndex;
 
                 packet1 = null;
                 packet2 = null;
             }
+
+            Console.WriteLine($"Sum of indices is: {sum}");
         }
 
-        private bool ComparePackets(Queue<string> packet1, Queue<string> packet2)
+        private Status ComparePackets(Queue<string> packet1, Queue<string> packet2)
         {
             while (true)
             {
                 string? item1 = packet1.Any() ? packet1.Dequeue() : null;
                 string? item2 = packet2.Any() ? packet2.Dequeue() : null;
-                if (item1 == null && item2 == null) return true;
-                if (item1 == null && item2 != null) return true;
-                if (item1 != null && item2 == null) return false;
+
+                if (item1 == null && item2 == null) return Status.Undefined;
+                if (item1 == null && item2 != null) return Status.InOrder;
+                if (item1 != null && item2 == null) return Status.OutOfOrder;
 
                 if (int.TryParse(item1, out int value1) && int.TryParse(item2, out int value2))
                 {
-                    if (value1 < value2) return true;
+                    if (value1 < value2) return Status.InOrder;
+                    if (value1 > value2) return Status.OutOfOrder;
                     continue;
                 }
 
@@ -55,7 +72,9 @@ namespace Day13
 
                 var q1 = ParsePacket(item1);
                 var q2 = ParsePacket(item2);
-                if (!ComparePackets(q1, q2)) return false;
+
+                var status = ComparePackets(q1, q2);
+                if (status is Status.InOrder or Status.OutOfOrder) return status;
             }
         }
 
