@@ -15,6 +15,50 @@ namespace Day13
 
         public void Run()
         {
+            List<string> sortedPackets = new()
+            {
+                "[[2]]",
+                "[[6]]"
+            };
+
+            foreach (var packet in File.ReadLines(FileName))
+            {
+                if (string.IsNullOrWhiteSpace(packet)) continue;
+
+                bool addPacketAtEnd = true;
+
+                for (int i = 0; i < sortedPackets.Count(); i++)
+                {
+                    var p1 = ParsePacket(RemoveOutsideBrackets(packet));
+                    var p2 = ParsePacket(RemoveOutsideBrackets(sortedPackets[i]));
+                    var status = ComparePackets(p1, p2);
+                    if (status == Status.InOrder)
+                    {
+                        sortedPackets.Insert(i, packet);
+                        addPacketAtEnd = false;
+                        break;
+                    }
+                }
+
+                if (addPacketAtEnd) sortedPackets.Add(packet);
+            }
+
+            int index = 0;
+            int twoIndex = 0;
+            int sixIndex = 0;
+
+            foreach (var packet in sortedPackets)
+            {
+                index++;
+                if (packet == "[[2]]") twoIndex = index;
+                else if (packet == "[[6]]") sixIndex = index;
+            }
+
+            Console.WriteLine($"two index: {twoIndex} + six index: {sixIndex} = {twoIndex * sixIndex}");
+        }
+
+        private void DayOne()
+        {
             Queue<string>? packet1 = null;
             Queue<string>? packet2 = null;
 
@@ -35,7 +79,7 @@ namespace Day13
                 else if (packet2 == null)
                 {
                     packet2 = ParsePacket(packet);
-                };
+                }
 
                 var status = ComparePackets(packet1, packet2);
 
