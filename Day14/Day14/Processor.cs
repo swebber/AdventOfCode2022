@@ -28,6 +28,9 @@ namespace Day14
         private int _xMax = int.MinValue;
         private int _yMin = int.MaxValue;
         private int _yMax = int.MinValue;
+        private int Floor => _yMax + 2;
+
+        private bool _hasReachedTheAbyss = false;
 
         private List<Point> _map = new();
 
@@ -41,10 +44,13 @@ namespace Day14
 
             while (true)
             {
+                if (_map.Contains(sand)) break;
+
                 var state = Move(sand);
                 if (state == Movement.HasReachedTheAbyss) break;
 
                 if (++count % 100 == 0) Console.WriteLine($"Units of sand: {count}");
+                if (count > 100000) throw new Exception();
             }
 
             Console.WriteLine($"Last unit of sand before reaching the abyss: {count}");
@@ -79,7 +85,7 @@ namespace Day14
             sand.Y += 1;
             if (HasReachedTheAbyss(sand)) return Movement.HasReachedTheAbyss;
 
-            if (_map.Contains(sand))
+            if (_map.Contains(sand) || sand.Y == Floor)
             {
                 sand.X -= 1;
                 sand.Y -= 1;
@@ -95,7 +101,7 @@ namespace Day14
             sand.Y += 1;
             if (HasReachedTheAbyss(sand)) return Movement.HasReachedTheAbyss;
 
-            if (_map.Contains(sand))
+            if (_map.Contains(sand) || sand.Y == Floor)
             {
                 sand.X += 1;
                 sand.Y -= 1;
@@ -110,7 +116,7 @@ namespace Day14
             sand.Y += 1;
             if (HasReachedTheAbyss(sand)) return Movement.HasReachedTheAbyss;
 
-            if (_map.Contains(sand))
+            if (_map.Contains(sand) || sand.Y == Floor)
             {
                 sand.Y -= 1;
                 return Movement.Blocked;
@@ -121,7 +127,8 @@ namespace Day14
 
         private bool HasReachedTheAbyss(Point sand)
         {
-            return sand.Y > _yMax || sand.X < _xMin || sand.X > _xMax;
+            _hasReachedTheAbyss = sand.Y > _yMax || sand.X < _xMin || sand.X > _xMax;
+            return false; // part two has an infinite floor
         }
 
         private void BuildMap()
