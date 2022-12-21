@@ -20,6 +20,19 @@ namespace Day15
         {
             LoadScanners();
             SizeGrid();
+
+            int y = 10;
+            for (int x = _minPoint.X; x < _maxPoint.X; x++)
+            {
+                foreach (var scanner in _scanners)
+                {
+                    if (scanner.Contains(x, y))
+                    {
+                        Console.WriteLine($"Scanner at: {scanner.Location}, Beacon at: {scanner.Beacon}, contains point: ({x},{y})");
+                        break;
+                    }
+                }
+            }
         }
 
         private void SizeGrid()
